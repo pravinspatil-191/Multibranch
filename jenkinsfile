@@ -1,44 +1,46 @@
 pipeline {
-    agent {
-        label 'RHEL-ec2-user'
-    }
+    agent any
+
     stages {
-  stage('checkout') {
-    steps {
-     checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/pravinspatil-191/jenkins.git']])
+
+        stage('Build') {
+            steps {
+                echo "Building ${env.BRANCH_NAME}"
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Unit Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Deploy Dev') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                echo "Dev branch - test and scan only"
+            }
+        }
+
+        stage('Deploy Production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo "Main branch deployment"
+
+                input(
+                    message: 'Deploy to Production?',
+                    ok: 'Deploy'
+                )
+
+                sh '''
+                echo "Production deployment started"
+                '''
+            }
+        }
     }
-  }
-
-  stage('build') {
-    steps {
-      sh '''
-      cd javaapp-standalone
-      /opt/maven/bin/mvn clean package
-      '''
-    }
-  }
-
-  stage('test') {
-    steps {
-      sh '''
-      ls
-      cd javaapp-standalone/target/
-      trivy fs java-sample-21-1.0.0.jar
-      '''
-    }
-  }
-
-  stage('deploy') {
-    steps {
-      sh '''
-      ls
-      cd javaapp-standalone/target/
-      mkdir -p /home/ec2-user/logs/jenkins
-      sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ec2-user/logs/jenkins/jenkins.log 2>&1 &
-      '''
-    }
-  }
-
-}
-
 }
