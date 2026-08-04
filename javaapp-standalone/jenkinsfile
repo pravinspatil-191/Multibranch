@@ -1,0 +1,44 @@
+pipeline {
+    agent {
+        label 'RHEL-ec2-user'
+    }
+    stages {
+  stage('checkout') {
+    steps {
+     checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/pravinspatil-191/jenkins.git']])
+    }
+  }
+
+  stage('build') {
+    steps {
+      sh '''
+      cd javaapp-standalone
+      /opt/maven/bin/mvn clean package
+      '''
+    }
+  }
+
+  stage('test') {
+    steps {
+      sh '''
+      ls
+      cd javaapp-standalone/target/
+      trivy fs java-sample-21-1.0.0.jar
+      '''
+    }
+  }
+
+  stage('deploy') {
+    steps {
+      sh '''
+      ls
+      cd javaapp-standalone/target/
+      mkdir -p /home/ec2-user/logs/jenkins
+      sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ec2-user/logs/jenkins/jenkins.log 2>&1 &
+      '''
+    }
+  }
+
+}
+
+}
