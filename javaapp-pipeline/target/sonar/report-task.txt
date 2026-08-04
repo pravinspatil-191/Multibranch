@@ -1,6 +1,0 @@
-projectKey=maven
-serverUrl=http://52.66.235.163:9000
-serverVersion=26.7.0.124771
-dashboardUrl=http://52.66.235.163:9000/dashboard?id=maven
-ceTaskId=f822625a-02e8-4406-b410-5b5a93ac8c99
-ceTaskUrl=http://52.66.235.163:9000/api/ce/task?id=f822625a-02e8-4406-b410-5b5a93ac8c99
