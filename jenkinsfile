@@ -21,7 +21,7 @@ pipeline {
 	  pwd
 	  ls
       cd Multibranch
-      /opt/maven/bin/mvn clean package
+      mvn clean package
       '''
     }
   }
