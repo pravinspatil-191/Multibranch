@@ -20,7 +20,7 @@ pipeline {
       sh '''
 	  pwd
 	  ls
-      mvn clean package
+    mvn clean package
       '''
     }
   }
