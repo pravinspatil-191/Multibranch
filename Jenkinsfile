@@ -35,9 +35,9 @@ pipeline {
 			    sh '''
 			    pwd
 				ls
-				mvn clean verify sonar:sonar \
-				-Dsonar.projectkey='Multibranch' \
-				-Dsonar.projectName=Multibranch
+				mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+				-Dsonar.projectkey=Multibranch \
+				-Dsonar.projectName='Multibranch'
 				'''
 			}
 
