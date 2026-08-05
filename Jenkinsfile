@@ -35,9 +35,9 @@ pipeline {
 			    sh '''
 			    pwd
 				ls
-				mvn clean verify sonar:sonar \
-				-Dsonar.projectkey='project1' \
-				-Dsonar.projectName=project1
+				mvn clean verify sonar1:sonar \
+				-Dsonar.projectkey='Multibranch' \
+				-Dsonar.projectName=Multibranch
 				'''
 			}
 
