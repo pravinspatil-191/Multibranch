@@ -31,7 +31,7 @@ pipeline {
 	}
 	agent { label 'SonarQube' }
     steps {
-	withSonarQubeEnv ('sonar'){
+	withSonarQubeEnv ('sonar1'){
 			    sh '''
 			    pwd
 				ls
