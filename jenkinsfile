@@ -1,46 +1,70 @@
 pipeline {
-    agent any
-
+    agent none
     stages {
-
-        stage('Build') {
-            steps {
-                echo "Building ${env.BRANCH_NAME}"
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Unit Test') {
-            steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Deploy Dev') {
-            when {
-                branch 'dev'
-            }
-            steps {
-                echo "Dev branch - test and scan only"
-            }
-        }
-
-        stage('Deploy Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo "Main branch deployment"
-
-                input(
-                    message: 'Deploy to Production?',
-                    ok: 'Deploy'
-                )
-
-                sh '''
-                echo "Production deployment started"
-                '''
-            }
-        }
+  stage('checkout') {
+	when {
+	 branch 'main'
+	}
+	agent { label 'DEV' }
+    steps {
+     checkout changelog: false, poll: false, scm: scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/pravinspatil-191/Multibranch.git']])
     }
+  }
+
+  stage('build') {
+	when {
+	 branch 'main'
+	}
+	agent { label 'DEV' }
+    steps {
+      sh '''
+	  pwd
+	  ls
+      cd Multibranch
+      mvn clean package
+      '''
+    }
+  }
+
+  stage('sonar/trivy') {
+	when {
+	branch 'dev'
+	}
+	agent { label 'SonarQube' }
+    steps {
+	withSonarQubeEnv ('sonar'){
+			    sh '''
+			    pwd
+				ls
+			    cd Multibranch
+				mvn clean verify sonar:sonar \
+				-Dsonar.projectkey='project1' \
+				-Dsonar.projectName=project1
+				'''
+			}
+
+      sh '''
+      ls
+      trivy fs java-sample-21-1.0.0.jar
+      '''
+    }
+  }
+
+  stage('deploy') {
+	when {
+		branch 'main'
+	}
+	agent { label 'DEV' }
+    steps {
+      sh '''
+      ls
+      cd Multibranch
+      mkdir -p /home/ec2-user/logs/jenkins
+      sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ec2-user/logs/jenkins/jenkins.log 2>&1 &
+      '''
+    }
+  }
+
+}
+
 }
