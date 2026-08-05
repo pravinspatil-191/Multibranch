@@ -40,11 +40,6 @@ pipeline {
 				-Dsonar.projectName='Multibranch'
 				'''
 			}
-
-      sh '''
-      ls
-      trivy fs java-sample-21-1.0.0.jar
-      '''
     }
   }
 
