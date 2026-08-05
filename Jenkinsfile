@@ -56,8 +56,8 @@ pipeline {
     steps {
       sh '''
       ls
-      mkdir -p /home/ec2-user/logs/jenkins
-      sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ec2-user/logs/jenkins/jenkins.log 2>&1 &
+      mkdir -p /home/ubuntu/logs/jenkins
+      sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ubuntu/logs/jenkins/jenkins.log 2>&1 &
       '''
     }
   }
