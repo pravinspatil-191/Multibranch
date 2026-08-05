@@ -20,8 +20,7 @@ pipeline {
       sh '''
 	  pwd
 	  ls
-      cd Multibranch
-      mvn clean package
+    mvn clean package
       '''
     }
   }
@@ -36,7 +35,6 @@ pipeline {
 			    sh '''
 			    pwd
 				ls
-			    cd Multibranch
 				mvn clean verify sonar:sonar \
 				-Dsonar.projectkey='project1' \
 				-Dsonar.projectName=project1
@@ -58,7 +56,6 @@ pipeline {
     steps {
       sh '''
       ls
-      cd Multibranch
       mkdir -p /home/ec2-user/logs/jenkins
       sudo JENKINS_NODE_COOKIE=dontkillMe nohup java -jar java-sample-21-1.0.0.jar > /home/ec2-user/logs/jenkins/jenkins.log 2>&1 &
       '''
